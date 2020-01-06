@@ -1,2 +1,15 @@
-# Few-Shot-Networks
-Containing Few-Shot Learning Networks
+## Prototype Network
+
+### Evaluation on Omniglot with Nc=60 and Ns=5
+
+|                  | 5-way 1-shot(Acc)  | 5-way 5-shot(Acc)  | 20-way 1-shot(Acc)| 20-way 5-shot(Acc)   |
+| ---------------- |:------------------:|:------------------:|:-----------------:|:--------------------:|
+| Paper            | 98.8%              | 99.7%              | 96.0%             | 98.9%                |
+| Ours             | 98.4%              | 99.6%              | 94.7%             | 98.6%                |
+
+### Evaluation on Omniglot with Nc=60 and Changable Ns
+
+|                  | Ns = 1 (Acc)       | Ns = 3 (Acc)       | Ns = 5 (Acc)      | Ns = 10 (Acc)        | Ns = 15 ( Acc)     |
+| ---------------- |:------------------:|:------------------:|:-----------------:|:--------------------:|:------------------:|
+| 5-way-5-shot     | 99.61%             | 99.62%             | 99.60%            | 99.53%               | 99.52%             |
+| 20-way-5-shot    | 98.60%             | 98.55%             | 98.53%            | 98.33%               | 98.38%             |
