@@ -27,7 +27,7 @@ def main(parser, logger):
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     model = Network.resnet18().to(device)
     model = DataParallel(model)
-    metric = ArcMarginProduct(512, len(np.unique(trainset.y)), s=30, m=0.5).to(device)
+    metric = ArcMarginProduct(256, len(np.unique(trainset.y)), s=30, m=0.5).to(device)
     metric = DataParallel(metric)
     criterion = torch.nn.CrossEntropyLoss()
     print('--> Initializing Optimizer and Scheduler:')
@@ -59,7 +59,7 @@ def main(parser, logger):
             train_correct += predicted.eq(targets).sum().item()
         scheduler.step()
         train_acc = 100.*train_correct / train_total
-        print('Training Loss: {} | Accuracy: {}'.format(train_loss/100, train_acc))
+        print('Training Loss: {} | Accuracy: {}'.format(train_loss/train_total, train_acc))
         # Validating
         val_correct = 0
         val_total = 0
@@ -70,7 +70,7 @@ def main(parser, logger):
             feature = model(inputs)
             correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
             val_correct += correct
-            val_total += inputs.size(0)
+            val_total += parser.num_query_val
         val_acc = 100.*val_correct / val_total
         print('Validating Accuracy: {}'.format(val_acc))
         if val_acc > best_acc:
@@ -86,7 +86,7 @@ def main(parser, logger):
             feature = model(inputs)
             correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
             test_correct += correct
-            test_total += inputs.size(0)
+            test_total += parser.num_query_val
     test_acc = 100. * test_correct / test_total
     print('Testing Accuracy: {}'.format(test_acc))
 

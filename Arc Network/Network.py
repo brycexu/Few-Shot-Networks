@@ -68,8 +68,8 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0], stride=2)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.fc5 = nn.Linear(512 * 2 * 2, 512)
+        self.layer4 = self._make_layer(block, 256, layers[3], stride=2)
+        self.fc5 = nn.Linear(256 * 2 * 2, 256)
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
