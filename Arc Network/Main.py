@@ -70,7 +70,7 @@ def main(parser, logger):
             feature = model(inputs)
             correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
             val_correct += correct
-            val_total += parser.num_query_val
+            val_total += parser.classes_per_it_val * parser.num_query_val
         val_acc = 100.*val_correct / val_total
         print('Validating Accuracy: {}'.format(val_acc))
         if val_acc > best_acc:
@@ -86,7 +86,7 @@ def main(parser, logger):
             feature = model(inputs)
             correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
             test_correct += correct
-            test_total += parser.num_query_val
+            test_total += parser.classes_per_it_val * parser.num_query_val
     test_acc = 100. * test_correct / test_total
     print('Testing Accuracy: {}'.format(test_acc))
 
