@@ -31,7 +31,10 @@ def main(parser, logger):
     metric = DataParallel(metric)
     criterion = torch.nn.CrossEntropyLoss()
     print('--> Initializing Optimizer and Scheduler:')
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=parser.learning_rate, weight_decay=0.0005)
+    optimizer = torch.optim.Adam(
+        [{'params':model.parameters(), 'weight_decay':5e-4},
+         {'params':[metric.weight], 'weight_decay':5e-4}],
+        lr=parser.learning_rate, weight_decay=0.0005)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer,
                                                 gamma=parser.lr_scheduler_gamma,
                                                 step_size=parser.lr_scheduler_step)
