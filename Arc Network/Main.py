@@ -21,22 +21,22 @@ def main(parser, logger):
     print('--> Preparing Dataset:')
     trainset = OmniglotDataset(mode='train', root=parser.dataset_root)
     trainloader = data.DataLoader(trainset, batch_size=100, shuffle=True, num_workers=0)
-    valloader = dataloader(parser, 'val')
-    #print(len(np.unique(trainset.y)))
-    #print(len(trainset))
-    #print(len(valloader))
+    valset = dataloader(parser, 'val')
+    testset = dataloader(parser, 'test')
     print('--> Building Model:')
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     model = Network.resnet18().to(device)
     model = DataParallel(model)
-    metric = ArcMarginProduct(192, len(np.unique(trainset.y)), s=30, m=0.3).to(device)
+    metric = ArcMarginProduct(512, len(np.unique(trainset.y)), s=30, m=0.5).to(device)
     metric = DataParallel(metric)
     criterion = torch.nn.CrossEntropyLoss()
     print('--> Initializing Optimizer and Scheduler:')
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=parser.learning_rate)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=parser.learning_rate, weight_decay=0.0005)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer,
                                                 gamma=parser.lr_scheduler_gamma,
                                                 step_size=parser.lr_scheduler_step)
+    best_acc = 0
+    best_state = model.state_dict()
     for epoch in range(parser.epochs):
         print('\nEpoch: %d' % epoch)
         # Training
@@ -64,19 +64,32 @@ def main(parser, logger):
         val_correct = 0
         val_total = 0
         model.eval()
-        for batch_index, (inputs, targets) in enumerate(valloader):
+        for batch_index, (inputs, targets) in enumerate(valset):
             inputs = inputs.to(device)
             targets = targets.to(device)
             feature = model(inputs)
             correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
             val_correct += correct
-            val_total += 20
+            val_total += inputs.size(0)
         val_acc = 100.*val_correct / val_total
-        print('Accuracy: {}'.format(val_acc))
-        info = {'train_accuracy': train_acc, 'val_accuracy': val_acc}
-        for tag, value in info.items():
-            logger.scalar_summary(tag, value, epoch + 1)
+        print('Validating Accuracy: {}'.format(val_acc))
+        if val_acc > best_acc:
+            best_acc = val_acc
+            best_state = model.state_dict()
+    test_correct = 0
+    test_total = 0
+    model.load_state_dict(best_state)
+    for epoch in range(10):
+        for batch_index, (inputs, targets) in enumerate(testset):
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+            feature = model(inputs)
+            correct = eval(input=feature, target=targets, n_support=parser.num_support_val)
+            test_correct += correct
+            test_total += inputs.size(0)
+    test_acc = 100. * test_correct / test_total
+    print('Testing Accuracy: {}'.format(test_acc))
 
 if __name__ == '__main__':
-    print('--> Begin Trainin and Validating')
+    print('--> 5 way 5 shot')
     main(parser1, logger1)
