@@ -21,7 +21,7 @@
 | 5-way-5-shot     | 99.51%             | 99.57%             | 99.54%            | 99.61%               | 99.62%             |
 | 20-way-5-shot    | 98.10%             | 98.45%             | 98.44%            | 98.53%               | 98.58%             |
 
-## Semantic-based Inter- and Intra- Class Feature Extractor
+## Semantic-assisted Inter- and Intra- Class Feature Extractor
 
 Backbone: 4 convolutional networks
 
