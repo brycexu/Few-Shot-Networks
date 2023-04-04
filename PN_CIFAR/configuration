@@ -1,0 +1,7 @@
+1. 下载数据集 CIFAR-FS: https://drive.google.com/file/d/1pTsCCMDj45kzFYgrnO67BWVbKs48Q3NI/view
+2. 解压数据集: unzip -qo '/home/ubuntu/project/cifar100.zip' -d '/home/ubuntu/project/'
+3. 修改 cifar_split.py, dataloader.py 里面的所有路径
+4. 运行 cifar_split.py 处理数据集
+5. 运行 train.py 训练
+
+参考: https://github.com/fiveai/on-episodes-fsl
